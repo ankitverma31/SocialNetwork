@@ -6,6 +6,9 @@ const router = express.Router();
 //Load profile model
 const Profile = require('../../models/Profile');
 
+// Load Input Validation(Profile)
+const validateProfileInput = require('../../validation/profile');
+
 //Load user model
 const User = require('../../models/Users');
 
@@ -36,40 +39,55 @@ router.get('/', passport.authenticate('jwt', {
         .catch(err => res.status(404).json(err))
 });
 
-// @route   POST api/profile
-// @desc    create/edit user profile
-// @access  private
-router.get('/', passport.authenticate('jwt', {
-    session: false
-}), (req, res) => {
-    //Get fields
-    const profileFields = {};
-    profileFields.user = req.body.id;
-    if (req.body.handle) profileFields.handle = req.body.handle;
-    if (req.body.company) profileFields.company = req.body.company;
-    if (req.body.website) profileFields.website = req.body.website;
-    if (req.body.location) profileFields.location = req.body.location;
-    if (req.body.bio) profileFields.bio = req.body.bio;
-    if (req.body.status) profileFields.status = req.body.status;
-    if (req.body.githubusername) profileFields.githubusername = req.body.githubusername;
-    // Skills split into array
-    if (typeof req.body.skills !== 'undefined') {
-        profileFields.skills = req.body.skills.split(',');
-    }
-    //Social
-    profileFields.social = {};
-    if (req.body.youtube) profileFields.youtube = req.body.youtube;
-    if (req.body.twitter) profileFields.twitter = req.body.twitter;
-    if (req.body.linkedin) profileFields.linkedin = req.body.linkedin;
-    if (req.body.facebook) profileFields.facebook = req.body.facebook;
-    if (req.body.instagram) profileFields.instagram = req.body.instagram;
+/// @route   POST api/profile
+// @desc    Create or edit user profile
+// @access  Private
+router.post(
+    '/',
+    passport.authenticate('jwt', {
+        session: false
+    }),
+    (req, res) => {
+        const {
+            errors,
+            isValid
+        } = validateProfileInput(req.body);
 
-    Profile.findOne({
+        // Check Validation
+        if (!isValid) {
+            // Return any errors with 400 status
+            return res.status(400).json(errors);
+        }
+
+        // Get fields
+        const profileFields = {};
+        profileFields.user = req.user.id;
+        if (req.body.handle) profileFields.handle = req.body.handle;
+        if (req.body.company) profileFields.company = req.body.company;
+        if (req.body.website) profileFields.website = req.body.website;
+        if (req.body.location) profileFields.location = req.body.location;
+        if (req.body.bio) profileFields.bio = req.body.bio;
+        if (req.body.status) profileFields.status = req.body.status;
+        if (req.body.githubusername)
+            profileFields.githubusername = req.body.githubusername;
+        // Skills - Spilt into array
+        if (typeof req.body.skills !== 'undefined') {
+            profileFields.skills = req.body.skills.split(',');
+        }
+
+        // Social
+        profileFields.social = {};
+        if (req.body.youtube) profileFields.social.youtube = req.body.youtube;
+        if (req.body.twitter) profileFields.social.twitter = req.body.twitter;
+        if (req.body.facebook) profileFields.social.facebook = req.body.facebook;
+        if (req.body.linkedin) profileFields.social.linkedin = req.body.linkedin;
+        if (req.body.instagram) profileFields.social.instagram = req.body.instagram;
+
+        Profile.findOne({
             user: req.user.id
-        })
-        .then(profile => {
+        }).then(profile => {
             if (profile) {
-                //Update Profile
+                // Update
                 Profile.findOneAndUpdate({
                     user: req.user.id
                 }, {
@@ -78,25 +96,24 @@ router.get('/', passport.authenticate('jwt', {
                     new: true
                 }).then(profile => res.json(profile));
             } else {
-                //create profile
-                //check if handle exists
+                // Create
+
+                // Check if handle exists
                 Profile.findOne({
-                        handle: profileFields.handle
-                    })
-                    .then(profile => {
-                        if (profile) {
-                            errors.handle = 'Username/Handle already exists';
-                            res.status(400).json(errors);
-                        }
-                        // save profile
-                        new Profile(profileFields).save().then(profile => res.json(profile));
-                    });
+                    handle: profileFields.handle
+                }).then(profile => {
+                    if (profile) {
+                        errors.handle = 'That handle already exists';
+                        res.status(400).json(errors);
+                    }
+
+                    // Save Profile
+                    new Profile(profileFields).save().then(profile => res.json(profile));
+                });
             }
         });
-
-
-
-});
+    }
+);
 
 
 

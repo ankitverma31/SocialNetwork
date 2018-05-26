@@ -10,7 +10,7 @@ const passport = require('passport');
 const router = express.Router();
 
 
-// Load Input Validation(Registrartion)
+// Load Input Validation(Registration)
 const validateRegisterInput = require('../../validation/register');
 
 // Load Input Validation(Login)
