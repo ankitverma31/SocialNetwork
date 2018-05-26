@@ -9,6 +9,12 @@ const passport = require('passport');
 
 const router = express.Router();
 
+
+// Load Input Validation(Registrartion)
+const validateRegisterInput = require('../../validation/register');
+
+// Load Input Validation(Login)
+const validateLoginInput = require('../../validation/login');
 // Load User Model
 const User = require('../../models/Users');
 
@@ -25,14 +31,23 @@ router.get('/test', (req, res) => res.json({
 // @access  public
 
 router.post('/register', (req, res) => {
+    const {
+        errors,
+        isValid
+    } = validateRegisterInput(req.body);
+
+    // Check Validation
+    if (!isValid) {
+        return res.status(400).json(errors);
+    }
+
     User.findOne({
             email: req.body.email
         })
         .then(user => {
             if (user) {
-                return res.status(400).json({
-                    email: 'Email already exists'
-                });
+                errors.email = 'Email already exists!'
+                return res.status(400).json(errors);
             } else {
 
                 var profilePicUrl = "http://picasaweb.google.com/data/entry/api/user/" + req.body.email + "?alt=json&fields=gphoto:thumbnail"
@@ -64,6 +79,16 @@ router.post('/register', (req, res) => {
 // @desc    Login user/ returning token
 // @access  public
 router.post('/login', (req, res) => {
+    const {
+        errors,
+        isValid
+    } = validateLoginInput(req.body);
+
+    // Check Validation
+    if (!isValid) {
+        return res.status(400).json(errors);
+    }
+
     const email = req.body.email;
     const password = req.body.password;
 
@@ -74,9 +99,8 @@ router.post('/login', (req, res) => {
         .then(user => {
             // check for user
             if (!user) {
-                return res.status(404).json({
-                    email: 'User not found'
-                });
+                errors.email = 'User not found';
+                return res.status(404).json(errors);
             }
 
             // Check for password
@@ -101,9 +125,8 @@ router.post('/login', (req, res) => {
 
                         });
                     } else {
-                        return res.status(404).json({
-                            password: "Incorrect Password!"
-                        });
+                        errors.password = 'Password is Incorrect!'
+                        return res.status(404).json(errors);
                     }
                 });
         });
