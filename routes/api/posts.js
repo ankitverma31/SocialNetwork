@@ -52,7 +52,7 @@ router.post('/', passport.authenticate('jwt', {
 });
 
 
-// @route   POST api/posts
+// @route   GET api/posts
 // @desc    Get Posts
 // @access  Public
 router.get('/', (req, res) => {
@@ -67,7 +67,7 @@ router.get('/', (req, res) => {
 
 });
 
-// @route   POST api/posts/:id
+// @route   GET api/posts/:id
 // @desc    Get post by id
 // @access  Public
 router.get('/:id', (req, res) => {
@@ -191,7 +191,7 @@ router.post(
 
 
 // @route   POST api/posts/comment/:id
-// @desc    Add comment to post
+// @desc    Add comment to post by post id
 // @access  Private
 router.post(
     '/comment/:id',
