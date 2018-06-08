@@ -39,8 +39,8 @@ app.use("/api/posts", posts);
 
 //Serve static assets if in production
 if (process.env.NODE_ENV === "production") {
-  // Declare static folder to be served. It contains the js, images, css, etc.
-  app.use(express.static("build"));
+  // Set static folder
+  app.use(express.static("client/build"));
   //set static folder
   app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
