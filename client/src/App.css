@@ -1,7 +1,9 @@
 img {
   width: 100%;
 }
-
+.resp-table {
+  overflow-x: auto;
+}
 .landing {
   position: relative;
   background: url("./img/showcase.jpg") no-repeat;
