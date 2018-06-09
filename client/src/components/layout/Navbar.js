@@ -17,17 +17,29 @@ class Navbar extends Component {
 
     const authLinks = (
       <ul className="navbar-nav ml-auto">
-        <li className="nav-item">
+        <li
+          className="nav-item"
+          data-toggle="collapse"
+          data-target=".navbar-collapse"
+        >
           <Link className="nav-link" to="/feed">
             Post Feed
           </Link>
         </li>
-        <li className="nav-item">
+        <li
+          className="nav-item"
+          data-toggle="collapse"
+          data-target=".navbar-collapse"
+        >
           <Link className="nav-link" to="/dashboard">
             Dashboard
           </Link>
         </li>
-        <li className="nav-item">
+        <li
+          className="nav-item"
+          data-toggle="collapse"
+          data-target=".navbar-collapse"
+        >
           <a
             href=""
             onClick={this.onLogoutClick.bind(this)}
@@ -38,7 +50,7 @@ class Navbar extends Component {
               src={user.avatar}
               alt={user.name}
               style={{ width: "25px", marginRight: "5px" }}
-              title="You must have a Gravatar connected to your email to display an image"
+              title="Your Google+ profile image is displayed here"
             />{" "}
             Logout
           </a>
@@ -48,12 +60,20 @@ class Navbar extends Component {
 
     const guestLinks = (
       <ul className="navbar-nav ml-auto">
-        <li className="nav-item">
+        <li
+          className="nav-item"
+          data-toggle="collapse"
+          data-target=".navbar-collapse"
+        >
           <Link className="nav-link" to="/register">
             Sign Up
           </Link>
         </li>
-        <li className="nav-item">
+        <li
+          className="nav-item"
+          data-toggle="collapse"
+          data-target=".navbar-collapse"
+        >
           <Link className="nav-link" to="/login">
             Login
           </Link>
@@ -78,8 +98,12 @@ class Navbar extends Component {
 
           <div className="collapse navbar-collapse" id="mobile-nav">
             <ul className="navbar-nav mr-auto">
-              <li className="nav-item">
-                <Link className="nav-link" to="/profiles">
+              <li
+                className="nav-item"
+                data-toggle="collapse"
+                data-target=".navbar-collapse"
+              >
+                <Link to="/profiles" className="nav-link">
                   {" "}
                   Developers
                 </Link>
@@ -102,6 +126,7 @@ const mapStateToProps = state => ({
   auth: state.auth
 });
 
-export default connect(mapStateToProps, { logoutUser, clearCurrentProfile })(
-  Navbar
-);
+export default connect(
+  mapStateToProps,
+  { logoutUser, clearCurrentProfile }
+)(Navbar);
